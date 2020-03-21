@@ -1,0 +1,49 @@
+Ansible control server should be linux, windows server doesn’t support Ansible, But we can manage windows servers using ansible control server
+
+Yum install ansible							To install ansible
+Sudo amazon-linux-extras install ansible2		To install on Ec2 machine
+Rm -rf ansible 							To remove ansible (if you have old version or messed up)
+Ansible —version							To check version on ansible
+Cd /etc/ansible							To go ansible directory
+Ls -lrt 									By default you will see (roles, hosts and ansible.cfg)—use this command being in ansible directory
+											Here hosts— It’s a inventory hosts list (to manage the remote machines)
+											roles — 
+											Ansible.cfg— this is were, managing ansbile path, coloring, folder structure, host inventory, ansible playbooks, port number.
+
+										To connect to remote servers, Control machine’s public key must be shared to all the remote machines, So this is password less authentication Just to add public token to multiple servers, we 										can execute shell scripts to avoid manual work 
+
+Useradd -d /home/ansadm -m ansadm			To create a unique userID.  (We can give any userid in place of ansadm)
+Passwd ansadm							To create a password
+Chage -l 	ansadm							To check the password expiration, Actually password should not expire 
+											So to perform sudo operations, userid must be added to sudoers list. (Ansadm       ALL=(ALL)       NOPASSWD=ALL)
+
+vi /etc/sudoers								To add user id to sudoers list (it will open sudoers list file)
+Chown -R ansadm:ansadm /etc/ansible		
+Chmod -R 755 Ansible						Both Commands: To change ownership of files in Ansible directory
+
+
+Ssh-keygen								To generate ssh key -enter -enter -enter (Now create a new ec2 machine, as it is just one server, you need to perform all the same steps like creating userID)
+										now login in to ansible master machine and open public key, copy that public key and copy to slave machine in path cd /home/ansadm, so to this
+
+Mkdir .ssh
+Chmod 700 .ssh
+Ls -lrt 									you will see authorized_keys file
+Cd /.ssh									go in to .ssh directory
+vi authorized_keys							In this paste the control server public key
+Chmod 600 authorized_keys					changing file permissions
+
+
+Ssh userid@privateip						To connect to slave machine from master without password.   (Default port number is 22)
+vi hosts									open hosts file, now add the remote machines private ip or public ip
+Ansible all -m ping							To ping the hosts machines
+Ansible all -m shell -a “df -h”					To check the disk space in all host machines
+
+Ansible doc -l								to list out the ansible modules
+
+										Advantages: we can manage from any platform, cloud or on-prem data centers
+												It is Agent less, just by ssh I can connect to machines and there is no third party client to integrate with remote machineh
+												It is light weight, not need to assign any space or disk. To perform any script execution, just need to specify the code path. So by default it’s taking the code path space
+												Performance is good, won’t take any memory
+												Easy to learn
+												It’s a declarative, it’s not a procedural (easily human readable context)
+
